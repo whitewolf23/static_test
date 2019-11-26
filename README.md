@@ -24,3 +24,20 @@ mp4 과 png 자료
 로 alias 를 이용하여 해당 파일명에 접근하면 성공 
 
 하지만 EC2 환경에서는 403 발생 -> 이유를 찾는중 
+
+원인 : 
+```
+  location /static {
+           # proxy_pass http://127.0.0.1:3000;
+           # alias /usr/share/nginx/static; <- 이 부분
+           add_header Cache-Control "xxx-minsu-poppy";
+           expires 30d;
+        }
+
+```
+
+alias 로 지정된 부분이 오류가 됨.
+로컬 환경에서는 가능하지만, ec2 nginx에서는 이미 usr/shared/nginx 부분에 root 로 공유 설정한 부분이 존재 
+
+따라서, 해당 부분에 cp 를 통한 파일복사이동을 하여, image 요청 캐싱을 하니까 성공!!!
+
